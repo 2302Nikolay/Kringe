@@ -113,14 +113,29 @@ lr.score(x_test, y_test)
 positive_text = """Банк ужасный. Отношение сотрудников хуже некда. Больше сюда не
 """
 
-positive_preprocessed_text = preprocess(positive_text, stop_words, punctuation_marks, morph)
-positive_seq = text_to_sequence(positive_preprocessed_text, word_to_index)
-positive_bow = vectorize_sequences([positive_seq], max_words)
-positive_bow[0][0:100]
-result = lr.predict(positive_bow)
+#positive_preprocessed_text = preprocess(positive_text, stop_words, punctuation_marks, morph)
+#positive_seq = text_to_sequence(positive_preprocessed_text, word_to_index)
+#positive_bow = vectorize_sequences([positive_seq], max_words)
+#positive_bow[0][0:100]
+#result = lr.predict(positive_bow)
 
 
-if result == 0:
-    print("Негативный")
-else:
-    print("Положительный")
+def predict_sentiment(text, model, word_to_index, max_words):
+    # Предобработка текста
+    preprocessed_text = preprocess(text, stop_words, punctuation_marks, morph)
+    # Преобразование текста в последовательность индексов
+    sequence = text_to_sequence(preprocessed_text, word_to_index)
+    # Векторизация последовательности
+    bow = vectorize_sequences([sequence], max_words)
+    # Предсказание с использованием модели
+    result = model.predict(bow)
+    
+    # Возвращение результата
+    return "Положительный" if result == 1 else "Негативный"
+
+
+while True:
+    inputtext = input("Введите комментарий: ")
+    # Пример использования функции для предсказания тональности текста
+    prediction = predict_sentiment(inputtext, lr, word_to_index, max_words)
+    print(f"Тональность текста: {prediction}")
