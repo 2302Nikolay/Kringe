@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from collections import Counter
 
 
+
 # Загрузка данных из nltk для токенизации и список стоп-слов
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -109,18 +110,7 @@ lr.fit(x_train, y_train)
 # Оценка точности модели на тестовом наборе
 lr.score(x_test, y_test)
 
-
-positive_text = """Банк ужасный. Отношение сотрудников хуже некда. Больше сюда не
-"""
-
-#positive_preprocessed_text = preprocess(positive_text, stop_words, punctuation_marks, morph)
-#positive_seq = text_to_sequence(positive_preprocessed_text, word_to_index)
-#positive_bow = vectorize_sequences([positive_seq], max_words)
-#positive_bow[0][0:100]
-#result = lr.predict(positive_bow)
-
-
-def predict_sentiment(text, model, word_to_index, max_words):
+def predict_sentiment(text, model=lr, max_words=max_words):
     # Предобработка текста
     preprocessed_text = preprocess(text, stop_words, punctuation_marks, morph)
     # Преобразование текста в последовательность индексов
@@ -133,9 +123,3 @@ def predict_sentiment(text, model, word_to_index, max_words):
     # Возвращение результата
     return "Положительный" if result == 1 else "Негативный"
 
-
-while True:
-    inputtext = input("Введите комментарий: ")
-    # Пример использования функции для предсказания тональности текста
-    prediction = predict_sentiment(inputtext, lr, word_to_index, max_words)
-    print(f"Тональность текста: {prediction}")

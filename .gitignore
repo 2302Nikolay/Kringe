@@ -4,7 +4,7 @@
 .Scripts
 .Lib
 *.cfg
-*.csv
+#*.csv
 .env2
 *.log
 
