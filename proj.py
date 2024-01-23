@@ -15,12 +15,12 @@ nltk.download('punkt')
 nltk.download('stopwords')
 
 # Задание максимального количества слов и случайного состояния для воспроизводимости результатов
-max_words = 10000
+max_words = 1000
 random_state = 42
 
 
 # Загрузка данных из файла 'banks.csv' и установка индекса
-banks = pd.read_csv('banks.csv', sep='\t', index_col='idx')
+banks = pd.read_csv('your_dataset.csv', sep=',')
 
 # Определение функции предобработки текста
 def preprocess(text, stop_words, punctuation_marks, morph):
@@ -36,12 +36,12 @@ def preprocess(text, stop_words, punctuation_marks, morph):
 
 # Задание списка пунктуационных знаков и загрузка стоп-слов для русского языка
 punctuation_marks = ['!', ',', '(', ')', ':', '-', '?', '.', '..', '...', '«', '»', ';', '–', '--']
-stop_words = stopwords.words("russian")
+stop_words = stopwords.words("english")
 morph = pymorphy3.MorphAnalyzer()
 
 
 # Применение функции предобработки ко всем текстам в датафрейме
-banks['Preprocessed_texts'] = banks.apply(lambda row: preprocess(row['Text'], punctuation_marks, stop_words, morph), axis=1)
+banks['Preprocessed_texts'] = banks.apply(lambda row: preprocess(row['review'], punctuation_marks, stop_words, morph), axis=1)
 
 # Использование Counter для подсчета частоты слов
 words = Counter()
@@ -73,8 +73,8 @@ def text_to_sequence(txt, word_to_index):
 banks['Sequences'] = banks.apply(lambda row: text_to_sequence(row['Preprocessed_texts'], word_to_index), axis=1)
 
 # Замена меток классов 'Negative' и 'Positive' числовыми значениями 0 и 1
-mapping = {'Negative': 0, 'Positive': 1}
-banks.replace({'Score': mapping}, inplace=True)
+mapping = {'negative': 0, 'positive': 1}
+banks.replace({'sentiment': mapping}, inplace=True)
 
 
 # Разделение данных на обучающий и тестовый наборы
@@ -82,10 +82,10 @@ train, test = train_test_split(banks, test_size=0.2)
 
 # Получение входных данных и меток классов для обучающего и тестового наборов
 x_train_seq = train['Sequences']
-y_train = train['Score']
+y_train = train['sentiment']
 
 x_test_seq = test['Sequences']
-y_test = test['Score']
+y_test = test['sentiment']
 
 
 # Функция для векторизации последовательностей
@@ -107,10 +107,10 @@ lr.fit(x_train, y_train)
 
 
 # Оценка точности модели на тестовом наборе
-print(lr.score(x_test, y_test))
+lr.score(x_test, y_test)
 
 
-positive_text = """Банк мне не понравислся. Отношение сотрудников хуже некуда. Складывалось впечатление, что ты не нужен. На все вопросы отвечали агрессивно, времени пришлось потратить очень много. Не рекомендую!
+positive_text = """Банк ужасный. Отношение сотрудников хуже некда. Больше сюда не
 """
 
 positive_preprocessed_text = preprocess(positive_text, stop_words, punctuation_marks, morph)
@@ -122,7 +122,5 @@ result = lr.predict(positive_bow)
 
 if result == 0:
     print("Негативный")
-elif result == 1:
-    print("Позитивный")
 else:
-    print("Оштбка")
+    print("Положительный")
