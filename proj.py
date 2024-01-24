@@ -8,7 +8,7 @@ from nltk.corpus import stopwords
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from collections import Counter
-
+import joblib
 
 
 # Загрузка данных из nltk для токенизации и список стоп-слов
@@ -20,7 +20,7 @@ max_words = 1000
 random_state = 42
 
 
-# Загрузка данных из файла 'banks.csv' и установка индекса
+# Загрузка данных из файла '.csv' и установка индекса
 banks = pd.read_csv('your_dataset.csv', sep=',')
 
 # Определение функции предобработки текста
@@ -108,9 +108,22 @@ lr.fit(x_train, y_train)
 
 
 # Оценка точности модели на тестовом наборе
-lr.score(x_test, y_test)
+print(lr.score(x_test, y_test))
 
-def predict_sentiment(text, model=lr, max_words=max_words):
+
+model_filename = 'sentiment_model.joblib'
+joblib.dump(lr, model_filename)
+
+# Загрузка модели
+loaded_model = joblib.load(model_filename)
+
+
+
+def predict_sentiment(text, word_to_index=word_to_index, max_words=max_words):
+
+    path_model = 'sentiment_model.joblib'
+    # Загрузка модели
+    model = joblib.load(path_model)
     # Предобработка текста
     preprocessed_text = preprocess(text, stop_words, punctuation_marks, morph)
     # Преобразование текста в последовательность индексов
@@ -122,4 +135,3 @@ def predict_sentiment(text, model=lr, max_words=max_words):
     
     # Возвращение результата
     return "Положительный" if result == 1 else "Негативный"
-
